@@ -73,9 +73,14 @@ function ChatBar({ main, setInput, sendMessage }) {
         }
         let word = main.input.substring(start, caretPosition)
 
-
-
         setSelectedWord(word)
+    }
+    const handleAutocompleteEmojiClick = (emoji) => {
+        setInput(replaceEmoji(emoji.emoji)); setSelectedWord("") 
+        inputRef.current.focus()
+        console.log(inputRef.current.selectionStart);
+        
+        console.log(inputRef.current.selectionStart);
     }
     const toogleEmojiPalleteDisplay = () => {
         if (showingEmojiPallete) {
@@ -86,7 +91,6 @@ function ChatBar({ main, setInput, sendMessage }) {
     }
 
     useEffect(() => {
-        const fullEmojiRegex = /^(:)([A-Z_0-9])(:)$/gim
         /*if (fullEmojiRegex.test(selectedWord)) {
 
             const search = searchEmoji(emojiData, selectedWord)
@@ -96,7 +100,9 @@ function ChatBar({ main, setInput, sendMessage }) {
             console.log(main.input.match(/[:][a-z_]+[:]/gi));
         }*/
         if (main.input.match(/[:][a-z_0-9]{2,}[:]/g)) {
+            console.log(main.input.match(/[:][a-z_0-9]{2,}[:]/g));
             const a = main.input.match(/[:][a-z_0-9]{2,}[:]/g);
+            
             a.map((emoji, index) => {
                 const search = searchEmoji(emojiData, a[index])
                 if (search) {
@@ -105,9 +111,9 @@ function ChatBar({ main, setInput, sendMessage }) {
                     
                     console.log(search);
                 }
-
+                
             })
-
+            
             //console.log(main.input);
         }
     }, [selectedWord])
@@ -129,7 +135,7 @@ function ChatBar({ main, setInput, sendMessage }) {
                             }).map((filteredEmoji, index, map) => {
                                 return (
                                     <div key={index} className='emoji-item'>
-                                        <button ref={index && index == 0 ? firstEmojiBtnRef : undefined} onClick={() => { setInput(replaceEmoji(filteredEmoji.emoji)); setSelectedWord("") }}>
+                                        <button ref={index && index == 0 ? firstEmojiBtnRef : undefined} onClick={() => handleAutocompleteEmojiClick(filteredEmoji)}>
                                             <div>
                                                 {filteredEmoji.emoji}
                                             </div>
@@ -183,7 +189,7 @@ function ChatBar({ main, setInput, sendMessage }) {
                     </div>
                 </div> : undefined}
                 <div id="send-message-form">
-                    <input onFocus={()=>{
+                    <input onFocus={() => {
                         setShowingEmojiPallete(false)
                     }} ref={inputRef} onSelect={getSelectedWord} onKeyDown={hadleSendMessageShortCut} placeholder='Send message' onChange={handleInputChange} value={main.input} id="send-message-input" type="text" />
                     <button onClick={addMessage} id="send-message-btn"><FontAwesomeIcon icon={faPaperPlane} /></button>
