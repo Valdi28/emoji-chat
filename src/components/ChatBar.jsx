@@ -11,17 +11,18 @@ function ChatBar({ main, setInput, sendMessage }) {
     const REGEX = /^(:)([A-Z_0-9]){2,}$/gim
     const inputRef = useRef()
     const [selectedWord, setSelectedWord] = useState("")
+    const [showingEmojiPallete, setShowingEmojiPallete] = useState(false)
 
     const handleInputChange = (event) => {
-        
-        setInput(event.target.value)
 
+        setInput(event.target.value)
+        setShowingEmojiPallete(false)
     }
     const searchEmoji = (emojiList, emojiToFind) => {
 
         let search = Object.values(emojiList).map(category => {
             //console.log(category);
-            return category.filter((emoji, index) => {
+            return category.emojis.filter((emoji, index) => {
                 //console.log(emoji[index].slug, selectedWord.match(/[^:]+/)[0]);
                 return emoji.slug === emojiToFind.match(/[^:]+/)[0]
             })
@@ -49,6 +50,14 @@ function ChatBar({ main, setInput, sendMessage }) {
             addMessage()
         }
     }
+
+    const handleEmojiPalleteClick = (event) => {
+        const input = inputRef.current
+        const caretPosition = input.selectionStart;
+        setInput(main.input.substring(0, input.selectionStart) + event.target.textContent + main.input.substring(input.selectionStart, main.input.length));
+        input.focus()
+        setShowingEmojiPallete(false)
+    }
     const getSelectedWord = (event) => {
         const input = event.target
         const caretPosition = input.selectionStart;
@@ -59,41 +68,61 @@ function ChatBar({ main, setInput, sendMessage }) {
         while (start > 0 && !/\s/.test(inputValue[start - 1])) {
             start--;
         }
-        while (end < main.input.length&& !/\s/.test(main.input[end-1])) {
+        while (end < main.input.length && !/\s/.test(main.input[end - 1])) {
             end++;
         }
         let word = main.input.substring(start, caretPosition)
-        
-        
-        
+
+
+
         setSelectedWord(word)
     }
-    const focusFirstEmojiButton = () => {
-        console.log(firstEmojiBtnRef.current);
+    const toogleEmojiPalleteDisplay = () => {
+        if (showingEmojiPallete) {
+            setShowingEmojiPallete(false)
+        } else {
+            setShowingEmojiPallete(true)
+        }
     }
 
     useEffect(() => {
-        console.log(selectedWord, REGEX.test(selectedWord));
-        const fullEmojiRegex = /^(:)([A-Z_0-9]){2,}(:)$/gim
-        if (fullEmojiRegex.test(selectedWord)) {
+        const fullEmojiRegex = /^(:)([A-Z_0-9])(:)$/gim
+        /*if (fullEmojiRegex.test(selectedWord)) {
 
             const search = searchEmoji(emojiData, selectedWord)
-            if(search) {
+            if (search) {
                 setInput(replaceEmoji(search.emoji))
             }
+            console.log(main.input.match(/[:][a-z_]+[:]/gi));
+        }*/
+        if (main.input.match(/[:][a-z_0-9]{2,}[:]/g)) {
+            const a = main.input.match(/[:][a-z_0-9]{2,}[:]/g);
+            a.map((emoji, index) => {
+                const search = searchEmoji(emojiData, a[index])
+                if (search) {
+
+                    setInput(main.input.replace(a[index], search.emoji))
+                    
+                    console.log(search);
+                }
+
+            })
+
+            //console.log(main.input);
         }
     }, [selectedWord])
+
 
     return (
         <div id="chat-bar">
             <div id="message-area">
-                {REGEX.test(selectedWord) ? <div id="emoji-list">
+                {REGEX.test(selectedWord) && showingEmojiPallete === false ? <div id="emoji-list">
                     <div id="search-info">
                         <p> SEARCHING FOR <span>{selectedWord.match(/[^:]/gi)}</span></p>
                     </div>
                     <div id="emojis">
                         {Object.values(emojiData).map((category, catIndex) => {
-                            return category.map(emoji => {
+                            return category.emojis.map(emoji => {
                                 return emoji
                             }).filter((emoji) => {
                                 return emoji.slug.includes(selectedWord.match(/[^:]+/)[0])
@@ -117,9 +146,48 @@ function ChatBar({ main, setInput, sendMessage }) {
                     </div>
 
                 </div> : undefined}
+                {showingEmojiPallete ? <div id="emoji-pallete">
+                    <div id="emoji-pallete-categories">
+                        {Object.keys(emojiData).map((category, index) => {
+                            return (
+                                <div key={index} className="emoji-pallete-category">
+                                    <a title={category} href={"#" + category}>
+                                        <div>
+                                            {emojiData[category].emoji}
+                                        </div>
+                                    </a>
+                                </div>
+                            )
+                        })}
+                    </div>
+                    <div id="emoji-pallete-emojis">
+                        {Object.keys(emojiData).map((category, index) => {
+                            return (
+                                <div id={category} key={index} className="emoji-pallete-emojis">
+                                    <div id="emoji-pallete-emojis-title">
+                                        {category}</div>
+                                    <div id="emojis-pallete-emojis-emojis">
+                                        {emojiData[category].emojis.map((emoji, index) => {
+                                            return (
+                                                <div key={index} id="emoji-pallete-emoji">
+                                                    <button onClick={handleEmojiPalleteClick}>
+                                                        {emoji.emoji}
+                                                    </button>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div> : undefined}
                 <div id="send-message-form">
-                    <input ref={inputRef} onSelect={getSelectedWord} onKeyDown={hadleSendMessageShortCut} placeholder='Send message' onChange={handleInputChange} value={main.input} id="send-message-input" type="text" />
+                    <input onFocus={()=>{
+                        setShowingEmojiPallete(false)
+                    }} ref={inputRef} onSelect={getSelectedWord} onKeyDown={hadleSendMessageShortCut} placeholder='Send message' onChange={handleInputChange} value={main.input} id="send-message-input" type="text" />
                     <button onClick={addMessage} id="send-message-btn"><FontAwesomeIcon icon={faPaperPlane} /></button>
+                    <button id="emojiPalleteToggler" onClick={() => toogleEmojiPalleteDisplay()}>😀</button>
                 </div>
             </div>
         </div>

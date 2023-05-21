@@ -2,6 +2,27 @@
     margin: 0;
     padding: 0;
     color: #fff;
+    scroll-behavior: smooth;
+}
+#emoji-pallete-emoji>button {
+    text-align: center;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    min-width: 0;
+    padding: 10px;
+    font-size: 1.5em;
+    display: block;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+#emoji-pallete-emoji>button:hover {
+    background-color: #2b2c2e;
+}
+
+#emojis-pallete-emojis-emojis {
+    width: 100%;
 }
 
 #root {
@@ -16,6 +37,85 @@
 #messages-div {
     overflow: scroll;
     padding-bottom: 60px;
+}
+
+
+#emoji-pallete {
+    display: flex;
+    flex-direction: row;
+    width: 50%;
+    height: 70vh;
+    background-color: #383A40;
+    margin: 10px;
+    margin-left: auto;
+    margin-right: 0;
+    box-sizing: border-box;
+}
+
+#emojiPalleteToggler{
+    border: none;
+    background: none;
+    font-size: large;
+}
+
+#emoji-pallete-categories {
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #2b2c2e;
+    height: 100%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    overflow-y: auto;
+    min-width: 80px;
+}
+
+.emoji-pallete-category {
+    min-width: 50px;
+    width: 100%;
+    background-color: transparent;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    word-break: break-all;
+}
+
+.emoji-pallete-category>a>div {
+    padding: 5px;
+    text-align: center;
+}
+.emoji-pallete-category {
+    padding: 10px;
+}
+.emoji-pallete-category>a {
+    text-decoration: none;
+}
+
+#emoji-pallete-emojis-title {
+    text-align: center;
+    padding: 10px;
+    word-break: break-all;
+}
+.emoji-pallete-category:hover {
+    background-color: #6683bd;
+    word-break: break-all;
+}
+
+#emoji-pallete-emojis {
+    overflow: auto;
+    width: 100%;
+}
+
+#emojis-pallete-emojis-emojis {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.emoji-pallete-emoji {
+    display: flex;
 }
 
 #emoji-list {
@@ -75,7 +175,7 @@
     align-items: center;
     gap: 10px;
     border-radius: 15px;
-    margin: 0  auto;
+    margin: 0 auto;
     margin-bottom: 10px;
 }
 
@@ -122,4 +222,16 @@
     display: flex;
     gap: 10px;
     flex-direction: column;
+}
+
+@media (max-width: 800px) {
+    #emoji-pallete {
+        box-sizing: border-box;
+        position: relative;
+
+        width: 100vw;
+    }
+    #emoji-pallete-emojis {
+        padding: 10px;
+    }
 }
